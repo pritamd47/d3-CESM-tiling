@@ -12,7 +12,7 @@
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
 
-     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css')}}">
+     <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='css/site.css')}}">
      <script src="https://d3js.org/d3.v7.min.js"></script>
   </head>
   <body>
@@ -169,7 +169,9 @@
                     
                     // finding out the height of each rectangle by looking at the first two y values
                     let yValues = [...new Set(data.map(d => d.y))];
-                    let yGap = yTileScale(yValues[1]) - yTileScale(yValues[0]);
+                    let yGap = Math.abs(yTileScale(yValues[1]) - yTileScale(yValues[0]));
+
+                    console.log(xGap, yGap)
 
                     // --ITERATING OVER RECTANGLES--
                     // creating a rectangle for each data point using the positions and dimensions just calculated
@@ -290,7 +292,7 @@
     </script>
 
     <!-- adding landmass outlines -->
-    <script src="{{ url_for('static', filename='js/outlines.js')}}"></script>
+    <script src="{{ url_for('static', path='js/outlines.js')}}"></script>
 
     <!-- d3.js code for time series on click -->
     <script>
@@ -325,9 +327,11 @@
             let latitude = projectedCoords.y;
             let longitude = projectedCoords.x;
 
-            let timeResponse = await fetch('/time-series/' + longitude.toString() + '/' + latitude.toString())
+            let timeResponse = await fetch('/ts/' + longitude.toString() + '/' + latitude.toString())
             let data = await timeResponse.json(); 
-            data = JSON.parse(data)
+            // data = JSON.parse(data)
+            data = data.data
+            console.log(data)
 
             data.sort((a, b) => a.time - b.time);
 
